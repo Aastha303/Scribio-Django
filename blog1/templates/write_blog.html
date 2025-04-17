@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<!-- Favicon and CSS -->
+<link rel="shortcut icon" href="{% static 'images/logi.webp' %}" type="image/x-icon">
+<link rel="stylesheet" href="{% static 'css/write_blog.css' %}">
+
+<div class="blog-container">
+    <h1>Write a New Blog</h1>
+    <form action="{% url 'submit_blog' %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="text" name="title" placeholder="Blog Title" required>
+        <textarea name="content" placeholder="Write your blog here..." rows="6" required></textarea>
+        <select name="category">
+            <option value="Technology">Technology</option>
+            <option value="Health">Health</option>
+            <option value="Education">Education</option>
+            <option value="Other">Other</option>
+        </select>
+        <input type="file" name="image">
+        <button type="submit">Publish</button>
+    </form>
+</div>
+
+{% endblock %}

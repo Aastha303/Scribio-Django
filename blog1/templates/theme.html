@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Blog Themes - Green Edition{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/theme.css' %}">
+<link rel="shortcut icon" href="{% static 'images/logi.webp' %}" type="image/x-icon">
+
+<header class="header">
+    <h1>Premium Blog Themes</h1>
+    <p>Transform your online presence with our professionally designed themes. Each theme is crafted for performance, aesthetics, and user experience.</p>
+
+    <div class="search-bar">
+        <input 
+            type="text" 
+            placeholder="Search themes..." 
+            id="searchInput"
+            autocomplete="off"
+            spellcheck="false">
+    </div>
+</header>
+
+<main class="themes-container" id="themesContainer">
+
+    <!-- Theme 1: Professional -->
+    <div class="theme-card" data-theme-name="Professional">
+        <div class="theme-image professional-image">
+            <img src="https://cdn.pixabay.com/photo/2024/04/19/16/49/ai-generated-8706674_1280.jpg" style="height: 280px;" alt="Professional Theme">
+            <div class="price-tag">$59</div>
+            <div class="theme-badge">Most Popular</div>
+        </div>
+        <div class="theme-content">
+            <h2>Professional</h2>
+            <div class="theme-stats">
+                <div class="stat-item"><div class="stat-value">4.9/5</div><div class="stat-label">Rating</div></div>
+                <div class="stat-item"><div class="stat-value">2.5k+</div><div class="stat-label">Downloads</div></div>
+                <div class="stat-item"><div class="stat-value">24/7</div><div class="stat-label">Support</div></div>
+            </div>
+            <p>Elevate your business blog with our premium professional theme, designed for maximum impact and engagement.</p>
+            <ul class="theme-features">
+                <li>SEO Optimized</li>
+                <li>Premium Typography</li>
+                <li>Advanced Analytics</li>
+                <li>Custom Widgets</li>
+                <li>Mobile-First Design</li>
+                <li>Premium Support</li>
+            </ul>
+            <div class="theme-actions">
+                <a href="#" class="btn preview-btn">Preview Theme</a>
+                <a href="#" class="btn demo-btn">Live Demo</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Theme 2: Creative -->
+    <div class="theme-card" data-theme-name="Creative">
+        <div class="theme-image creative-image">
+            <img src="https://cdn.pixabay.com/photo/2025/01/04/09/37/pedzle-9309479_1280.jpg" style="height: 280px; width: 600px;" alt="Creative Theme">
+            <div class="price-tag">$49</div>
+            <div class="theme-badge">Featured</div>
+        </div>
+        <div class="theme-content">
+            <h2>Creative</h2>
+            <div class="theme-stats">
+                <div class="stat-item"><div class="stat-value">4.8/5</div><div class="stat-label">Rating</div></div>
+                <div class="stat-item"><div class="stat-value">1.8k+</div><div class="stat-label">Downloads</div></div>
+                <div class="stat-item"><div class="stat-value">24/7</div><div class="stat-label">Support</div></div>
+            </div>
+            <p>Unleash your creativity with our dynamic theme designed for artists, photographers, and creative professionals.</p>
+            <ul class="theme-features">
+                <li>Portfolio Layouts</li>
+                <li>Gallery Integration</li>
+                <li>Animation Effects</li>
+                <li>Color Customization</li>
+                <li>Social Media Tools</li>
+                <li>Video Backgrounds</li>
+            </ul>
+            <div class="theme-actions">
+                <a href="#" class="btn preview-btn">Preview Theme</a>
+                <a href="#" class="btn demo-btn">Live Demo</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Theme 3: Magazine -->
+    <div class="theme-card" data-theme-name="Magazine">
+        <div class="theme-image magazine-image">
+            <img src="https://cdn.pixabay.com/photo/2016/09/16/17/16/consumer-1674574_1280.jpg" style="height: 280px; width: 500px;" alt="Magazine Theme">
+            <div class="price-tag">$69</div>
+            <div class="theme-badge">New</div>
+        </div>
+        <div class="theme-content">
+            <h2>Magazine</h2>
+            <div class="theme-stats">
+                <div class="stat-item"><div class="stat-value">4.7/5</div><div class="stat-label">Rating</div></div>
+                <div class="stat-item"><div class="stat-value">980+</div><div class="stat-label">Downloads</div></div>
+                <div class="stat-item"><div class="stat-value">24/7</div><div class="stat-label">Support</div></div>
+            </div>
+            <p>Perfect for news sites and online magazines, featuring advanced content management and monetization tools.</p>
+            <ul class="theme-features">
+                <li>Dynamic Grid Layout</li>
+                <li>Ad Space Integration</li>
+                <li>Category Management</li>
+                <li>Newsletter System</li>
+                <li>Reading Progress</li>
+                <li>Subscriber Portal</li>
+            </ul>
+            <div class="theme-actions">
+                <a href="#" class="btn preview-btn">Preview Theme</a>
+                <a href="#" class="btn demo-btn">Live Demo</a>
+            </div>
+        </div>
+    </div>
+
+</main>
+{% endblock %}
+
+{% block script %}
+<script src="{% static 'js/theme.js' %}"></script>
+{% endblock %}

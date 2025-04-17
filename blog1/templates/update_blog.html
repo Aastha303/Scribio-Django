@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<!-- Favicon and CSS -->
+<link rel="shortcut icon" href="{% static 'images/logi.webp' %}" type="image/x-icon">
+<link rel="stylesheet" href="{% static 'css/write_blog.css' %}">
+
+<div class="blog-container">
+    <h1>{% if blog %}Edit Blog{% else %}Write a New Blog{% endif %}</h1>
+
+    <form action="{% if blog %}{% url 'edit_blog' blog.id %}{% else %}{% url 'submit_blog' %}{% endif %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <input type="text" name="title" value="{{ blog.title|default:'' }}" placeholder="Blog Title" required>
+        
+        <textarea name="content" placeholder="Write your blog here..." rows="6" required>{{ blog.content|default:'' }}</textarea>
+        
+        <select name="category">
+            <option value="Technology" {% if blog.category == "Technology" %}selected{% endif %}>Technology</option>
+            <option value="Health" {% if blog.category == "Health" %}selected{% endif %}>Health</option>
+            <option value="Education" {% if blog.category == "Education" %}selected{% endif %}>Education</option>
+            <option value="Other" {% if blog.category == "Other" %}selected{% endif %}>Other</option>
+        </select>
+        
+        <input type="file" name="image">
+        
+        <button type="submit">{% if blog %}Update{% else %}Publish{% endif %}</button>
+    </form>
+</div>
+
+{% endblock %}

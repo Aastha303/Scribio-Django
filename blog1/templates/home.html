@@ -1,0 +1,140 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scribio - Your Story, Your Voice</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="{% static 'images/logi.webp' %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+</head>
+<body class="font-sans bg-white text-gray-900">
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 bg-white bg-opacity-100 backdrop-blur-lg shadow-sm" style="opacity: 1;">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-20 items-center">
+                <img src="{% static 'images/logi.webp' %}" alt="" style="height: 50px; border-radius: 25px;">
+                <a href="{% url 'index' %}" class="text-4xl font-black tracking-tighter hover-pulse primary-text" style="padding-right: 700px;">
+                    SCRIBIO
+                </a>
+                <div class="hidden md:flex space-x-8">
+                    <!-- <a href="#" class="text-xl font-bold nav-link transition-colors">Compose</a>
+                    <a href="#" class="text-xl font-bold nav-link transition-colors">Publish</a>
+                    <a href="#" class="text-xl font-bold nav-link transition-colors">Grow</a> -->
+                </div>
+                <a href="{% url 'rec_topic' %}" class="bold-gradient px-12 py-6 rounded-lg text-2xl font-black text-white hover-transform" style="margin-top: 5px;">
+                    START WRITING
+                </a>
+                
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="min-h-screen flex items-center pt-20 neutral-bg">
+        <div class="max-w-7xl mx-auto px-4 py-20">
+            <div class="text-center">
+                <h1 class="text-8xl font-black mb-8 tracking-tighter animate-slide-up">
+                    YOUR WORDS
+                    <span class="block secondary-text">DESERVE</span>
+                    <span class="block primary-text">TO BE HEARD</span>
+                </h1>
+                <p class="text-2xl mb-12 text-gray-600 max-w-2xl mx-auto animate-fade-in">
+                    Write, publish, and grow your audience with powerful blogging tools.
+                </p>
+                <div class="flex justify-center space-x-6 animate-scale-in">
+                    <a href="{% url 'index' %}" class="bold-gradient px-12 py-6 rounded-lg text-2xl font-black text-white hover-transform">
+                        START YOUR BLOG
+                    </a>
+                    <a href="{% url 'theme' %}" class="accent-bg text-white px-12 py-6 rounded-lg text-2xl font-black hover-transform">
+                        VIEW THEMES
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-32 bg-white">
+        <div class="max-w-7xl mx-auto px-4">
+            <h2 class="text-7xl font-black text-center mb-20 tracking-tighter reveal primary-text">
+                CRAFT YOUR STORY
+            </h2>
+            <div class="grid md:grid-cols-2 gap-12">
+                <div class="neutral-bg shadow-lg p-12 rounded-2xl hover-transform reveal">
+                    <h3 class="text-4xl font-black mb-6 secondary-text">RICH EDITOR</h3>
+                    <p class="text-xl text-gray-600">Craft beautiful posts with our intuitive writing tools and formatting options.</p>
+                </div>
+                <div class="neutral-bg shadow-lg p-12 rounded-2xl hover-transform reveal">
+                    <h3 class="text-4xl font-black mb-6 secondary-text">CUSTOM DOMAINS</h3>
+                    <p class="text-xl text-gray-600">Share your blog under your own professional domain name.</p>
+                </div>
+                <div class="neutral-bg shadow-lg p-12 rounded-2xl hover-transform reveal">
+                    <h3 class="text-4xl font-black mb-6 secondary-text">SEO TOOLS</h3>
+                    <p class="text-xl text-gray-600">Optimize your content to reach more readers through search.</p>
+                </div>
+                <div class="neutral-bg shadow-lg p-12 rounded-2xl hover-transform reveal">
+                    <h3 class="text-4xl font-black mb-6 secondary-text">NEWSLETTER</h3>
+                    <p class="text-xl text-gray-600">Build your email list and connect directly with your readers.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Templates Section -->
+    <section class="py-32 neutral-bg">
+        <div class="max-w-7xl mx-auto px-4">
+            <h2 class="text-7xl font-black text-center mb-20 tracking-tighter reveal">
+                BEAUTIFUL
+                <span class="secondary-text">BLOG</span>
+                THEMES
+            </h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="animate-border rounded-2xl overflow-hidden hover-transform reveal">
+                    <img src="https://cdn.pixabay.com/photo/2024/04/19/16/49/ai-generated-8706671_1280.jpg" alt="Professional Theme" class="w-full" style="height: 200px;">
+                    <div class="p-8 bg-white shadow-lg">
+                        <h3 class="text-3xl font-black primary-text">PROFESSIONAL</h3>
+                    </div>
+                </div>
+                <div class="animate-border rounded-2xl overflow-hidden hover-transform reveal">
+                    <img src="https://cdn.pixabay.com/photo/2016/11/29/12/28/chalks-1869492_1280.jpg" alt="Creative Theme" class="w-full" style="height: 200px;">
+                    <div class="p-8 bg-white shadow-lg">
+                        <h3 class="text-3xl font-black primary-text">CREATIVE</h3>
+                    </div>
+                </div>
+                <div class="animate-border rounded-2xl overflow-hidden hover-transform reveal">
+                    <img src="https://cdn.pixabay.com/photo/2017/08/02/01/44/books-2569649_1280.jpg" alt="Magazine Theme" class="w-full" style="height: 200px;">
+                    <div class="p-8 bg-white shadow-lg">
+                        <h3 class="text-3xl font-black primary-text">MAGAZINE</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="py-32 bold-gradient">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <h2 class="text-7xl font-black mb-12 tracking-tighter text-white reveal">
+                START WRITING TODAY
+            </h2>
+            <a href="{% url 'index' %}" class="bg-white primary-text px-12 py-6 rounded-lg text-2xl font-black hover-transform inline-block reveal">
+                CREATE YOUR BLOG
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-white py-20 border-t border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-2xl font-black tracking-tighter primary-text">
+                ©️ 2025 SCRIBIO. WRITE YOUR STORY.
+            </p>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/home.js' %}"></script>
+</body>
+</html>

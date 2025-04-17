@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Writing Assistant</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0fff4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .chat-container {
+            background-color: #ffffff;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 20px rgba(0, 128, 0, 0.15);
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #2f855a;
+            margin-bottom: 20px;
+        }
+
+        #chatInput {
+            width: 80%;
+            padding: 12px;
+            border: 2px solid #38a169;
+            border-radius: 10px;
+            outline: none;
+            font-size: 16px;
+        }
+
+        button {
+            margin-top: 15px;
+            background-color: #38a169;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #2f855a;
+        }
+
+        .output {
+            margin-top: 25px;
+            background-color: #f0fff4;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #c6f6d5;
+            color: #2f855a;
+            font-weight: 500;
+            min-height: 50px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <a href="{% url 'index' %}" style="text-decoration: none;"><h2>💬 SCRIBY </h2></a>
+        <input type="text" id="chatInput" placeholder="Type your blog idea..." />
+        <br>
+        <button onclick="sendQuery()">Send</button>
+        <div class="output" id="chatOutput">Waiting for input...</div>
+    </div>
+
+    <script>
+        function getCSRFToken() {
+            return document.cookie.split('; ').find(row => row.startsWith('csrftoken'))?.split('=')[1];
+        }
+    
+        function sendQuery() {
+            const userText = document.getElementById("chatInput").value;
+            const outputBox = document.getElementById("chatOutput");
+    
+            if (!userText.trim()) {
+                outputBox.innerText = "Please enter something first.";
+                return;
+            }
+    
+            outputBox.innerText = "Thinking...";
+    
+            // Update fetch URL to match the correct path
+            fetch("/profile/chatbot", {  // Correct URL
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCSRFToken(),
+                },
+                body: JSON.stringify({ message: userText }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                outputBox.innerText = data.response || "Sorry, I couldn't understand.";
+                document.getElementById("chatInput").value = "";  // Clear the input
+            })
+            .catch(error => {
+                outputBox.innerText = "Oops! Something went wrong.";
+                console.error("Error:", error);
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,275 @@
+:root {
+    --color-primary: #064E3B;
+    --color-primary-dark: #053E2F;
+    --color-primary-light: #F0FDF4;
+    --color-secondary: #0D9488;
+    --color-accent: #14B8A6;
+}
+
+/* Base styles */
+.text-primary { color: var(--color-primary); }
+.bg-primary { background-color: var(--color-primary); }
+.bg-primary-light { background-color: var(--color-primary-light); }
+.hover\:bg-primary-dark:hover { background-color: var(--color-primary-dark); }
+.border-primary { border-color: var(--color-primary); }
+.border-primary-dark { border-color: var(--color-primary-dark); }
+.hover\:text-primary:hover { color: var(--color-primary); }
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes borderPulse {
+    0% { border-color: var(--color-primary); }
+    50% { border-color: var(--color-secondary); }
+    100% { border-color: var(--color-primary); }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.6s ease-out;
+}
+
+.animate-slide-up {
+    animation: slideUp 0.6s ease-out;
+}
+
+.animate-scale-in {
+    animation: scaleIn 0.6s ease-out;
+}
+
+.animate-border-pulse {
+    animation: borderPulse 3s infinite;
+}
+
+/* Scroll reveal animation */
+.reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s ease-out;
+}
+
+.reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Hover animations */
+.hover-lift {
+    transition: transform 0.2s ease-out;
+}
+
+.hover-lift:hover {
+    transform: translateY(-4px);
+}
+
+.hover-scale {
+    transition: transform 0.2s ease-out;
+}
+
+.hover-scale:hover {
+    transform: scale(1.02);
+}
+
+/* Card hover effects */
+.blog-card {
+    transition: all 0.3s ease-out;
+}
+
+.blog-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px rgba(6, 78, 59, 0.1);
+}
+
+/* Smooth transitions */
+a, button {
+    transition: all 0.2s ease-in-out;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--color-primary-light);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--color-primary);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary-dark);
+}
+
+/* Write Blog Page Styles */
+.blog-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.blog-container h1 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.blog-container input,
+.blog-container textarea,
+.blog-container select {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.blog-container button {
+    background: #0e581d;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.blog-container button:hover {
+    background: #054a14;
+}
+
+/* Override blue with green */
+             
+.text-primary, .hover\:text-primary:hover, a.text-primary, 
+.text-primary-dark, .hover\:text-primary-dark:hover {
+    color: #064E3B !important;
+    text-decoration: none;
+}
+
+.bg-primary, .hover\:bg-primary:hover {
+    background-color: #064E3B !important;
+    color: white !important;
+    text-decoration: none;
+}
+
+.hover\:bg-primary-dark:hover {
+    background-color: #053E2F !important;
+}
+
+.bg-primary-light {
+    background-color: #ECFDF5 !important;
+}
+
+.border-primary, .hover\:border-primary:hover,
+.border-primary-dark, .focus\:border-primary:focus {
+    border-color: #064E3B !important;
+}
+
+/* Override Bootstrap blue alerts to green */
+.bg-blue-500 {
+    background-color: #064E3B !important;
+}
+
+/* Override any Bootstrap blues */
+.btn-primary {
+    background-color: #064E3B !important;
+    border-color: #064E3B !important;
+}
+
+/* Ensure "Get Started" button has white text */
+.bg-primary.text-white {
+    color: white !important;
+}
+
+/* Fix any links that should remain text-gray before hover */
+.text-gray-600.hover\:text-primary {
+    color: #4B5563;
+}
+.text-gray-600.hover\:text-primary:hover {
+    color: #064E3B !important;
+}
+/* Add or update these styles in your existing <style> section */
+
+/* Remove text decoration from all links */
+a {
+text-decoration: none !important;
+}
+
+/* Ensure profile links have no decoration and use green color */
+a[href^="{% url 'profile"], 
+.profile-link {
+text-decoration: none !important;
+color: #064E3B !important;
+}
+
+/* Handle hover states for profile links */
+a[href^="{% url 'profile"]:hover, 
+.profile-link:hover {
+color: #053E2F !important;
+text-decoration: none !important;
+}
+
+/* Override any Bootstrap default link colors that might still be blue */
+.nav-link, .btn-link {
+color: #064E3B !important;
+text-decoration: none !important;
+}
+
+/* Override any remaining Bootstrap blue styles */
+.text-info, .text-primary, .link-primary, .link-info {
+color: #064E3B !important;
+text-decoration: none !important;
+}
+
+.text-xl h3 {
+color: #064E3B !important;
+}
+
+/* Explicitly set footer headings to green */
+footer h3.text-xl {
+color: #064E3B !important;
+}
+
+/* Ensure Get Started button is green */
+a.bg-primary {
+background-color: #064E3B !important;
+color: white !important;
+}
+
+/* Add hover effect for Get Started button */
+a.bg-primary:hover {
+background-color: #053E2F !important;
+}
+
+/* Make the 1.2M+ Stories text green */
+.text-2xl.font-bold {
+color: #064E3B !important;
+}

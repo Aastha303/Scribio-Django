@@ -1,0 +1,109 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+body {
+    background-color: #f8f8f8;
+    padding: 2rem;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+h1 {
+    font-size: 2.5rem;
+    color: #1a8917;
+    margin-bottom: 1rem;
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    color: #595959;
+    margin-bottom: 2rem;
+}
+
+.topics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.topic-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    position: relative;
+    overflow: hidden;
+}
+
+.topic-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.topic-card.selected {
+    border-color: #1a8917;
+    background-color: #f1f9f1;
+}
+
+.topic-card.selected::after {
+    content: "✓";
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    color: #1a8917;
+    font-weight: bold;
+}
+
+.topic-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.topic-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #292929;
+    margin-bottom: 0.5rem;
+}
+
+.topic-description {
+    font-size: 0.9rem;
+    color: #757575;
+    line-height: 1.4;
+}
+
+.continue-link {
+    display: block;
+    width: 200px;
+    margin: 2rem auto;
+    padding: 1rem 2rem;
+    background-color: #1a8917;
+    color: white;
+    border: none;
+    border-radius: 99px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+    text-align: center;
+}
+
+.continue-link:hover {
+    background-color: #147811;
+}

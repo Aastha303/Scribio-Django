@@ -1,0 +1,781 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Admin Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">
+            <i class="fas fa-layer-group"></i>
+            <a href="{% url 'index' %}" style="text-decoration: none; color: #0D9488;"><span>BlogAdmin</span></a>
+        </div>
+        
+        <div class="admin-info">
+            <div class="admin-avatar">A</div>
+            <div>
+                <div class="admin-name">Admin User</div>
+                <div class="admin-role">Super Admin</div>
+            </div>
+        </div>
+        
+        <div class="nav-section">
+            <div class="nav-section-title">Main</div>
+            <div class="nav-item active" data-tab="dashboard">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </div>
+            <div class="nav-item" data-tab="posts">
+                <i class="fas fa-file-alt"></i>
+                <span>Posts</span>
+            </div>
+            <div class="nav-item" data-tab="reported">
+                <i class="fas fa-flag"></i>
+                <span>Reported Content</span>
+            </div>
+        </div>
+        
+        <div class="nav-section">
+            <div class="nav-section-title">Management</div>
+            <div class="nav-item" data-tab="users">
+                <i class="fas fa-users"></i>
+                <span>Users</span>
+            </div>
+            <div class="nav-item" data-tab="categories">
+                <i class="fas fa-tags"></i>
+                <span>Categories</span>
+            </div>
+            <div class="nav-item" data-tab="comments">
+                <i class="fas fa-comments"></i>
+                <span>Comments</span>
+            </div>
+        </div>
+        
+        <div class="nav-section">
+            <div class="nav-section-title">Settings</div>
+            <div class="nav-item" data-tab="profile">
+                <i class="fas fa-user-circle"></i>
+                <span>Profile</span>
+            </div>
+            <div class="nav-item" data-tab="settings">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </div>
+            <div class="nav-item">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Dashboard Tab -->
+        <div class="content-tabs active" id="dashboard">
+            <div class="header">
+                <h1 class="page-title">Dashboard</h1>
+                <div class="search-bar">
+                    <input type="text" placeholder="Search...">
+                    <i class="fas fa-search"></i>
+                </div>
+            </div>
+            
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <div class="stat-card-title">Total Posts</div>
+                    <div class="stat-card-value">248</div>
+                    <div class="stat-card-change positive">
+                        <i class="fas fa-arrow-up"></i> 12% from last month
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-card-title">Active Users</div>
+                    <div class="stat-card-value">1,254</div>
+                    <div class="stat-card-change positive">
+                        <i class="fas fa-arrow-up"></i> 5% from last month
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-card-title">Comments</div>
+                    <div class="stat-card-value">3,672</div>
+                    <div class="stat-card-change positive">
+                        <i class="fas fa-arrow-up"></i> 8% from last month
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-card-title">Reported Content</div>
+                    <div class="stat-card-value">12</div>
+                    <div class="stat-card-change negative">
+                        <i class="fas fa-arrow-down"></i> 3% from last month
+                    </div>
+                </div>
+            </div>
+            
+            <div class="content-area">
+                <div class="chart-container card">
+                    <div class="chart-header">
+                        <div class="chart-title">User Activity</div>
+                        <div class="chart-period">Last 7 days</div>
+                    </div>
+                    <canvas id="activityChart" height="250"></canvas>
+                </div>
+                
+                <div class="reported-posts card">
+                    <div class="card-header">
+                        <div class="card-title">Reported Posts</div>
+                        <button class="btn btn-outline" id="viewAllReported">View All</button>
+                    </div>
+                    
+                    <div class="reported-post">
+                        <div class="reported-post-header">
+                            <div class="reported-post-title">Inappropriate language in post</div>
+                            <div class="reported-post-date">2 hours ago</div>
+                        </div>
+                        <div class="reported-post-reason">
+                            This post contains offensive language that violates community guidelines.
+                        </div>
+                        <div class="reported-post-actions">
+                            <button class="btn btn-primary">Review</button>
+                            <button class="btn btn-danger">Delete Post</button>
+                            <button class="btn btn-warning">Warn User</button>
+                        </div>
+                    </div>
+                    
+                    <div class="reported-post">
+                        <div class="reported-post-header">
+                            <div class="reported-post-title">Spam content detected</div>
+                            <div class="reported-post-date">5 hours ago</div>
+                        </div>
+                        <div class="reported-post-reason">
+                            Multiple users reported this post as spam content with promotional links.
+                        </div>
+                        <div class="reported-post-actions">
+                            <button class="btn btn-primary">Review</button>
+                            <button class="btn btn-danger">Delete Post</button>
+                            <button class="btn btn-warning">Warn User</button>
+                        </div>
+                    </div>
+                    
+                    <div class="reported-post">
+                        <div class="reported-post-header">
+                            <div class="reported-post-title">Copyright infringement claim</div>
+                            <div class="reported-post-date">1 day ago</div>
+                        </div>
+                        <div class="reported-post-reason">
+                            User claimed this content was copied from their original work without permission.
+                        </div>
+                        <div class="reported-post-actions">
+                            <button class="btn btn-primary">Review</button>
+                            <button class="btn btn-danger">Delete Post</button>
+                            <button class="btn btn-warning">Warn User</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Recent Posts</div>
+                    <button class="btn btn-outline">View All Posts</button>
+                </div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Author</th>
+                                <th>Category</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>10 Tips for Better Blog Writing</td>
+                                <td>John Smith</td>
+                                <td>Writing</td>
+                                <td>Apr 8, 2025</td>
+                                <td><span class="status-badge status-published">Published</span></td>
+                                <td>
+                                    <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                    <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>The Future of AI in Content Creation</td>
+                                <td>Sarah Johnson</td>
+                                <td>Technology</td>
+                                <td>Apr 7, 2025</td>
+                                <td><span class="status-badge status-published">Published</span></td>
+                                <td>
+                                    <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                    <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>5 Essential SEO Strategies for 2025</td>
+                                <td>Michael Lee</td>
+                                <td>Marketing</td>
+                                <td>Apr 7, 2025</td>
+                                <td><span class="status-badge status-draft">Draft</span></td>
+                                <td>
+                                    <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                    <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Photography Basics: Composition Tips</td>
+                                <td>Emma Wilson</td>
+                                <td>Photography</td>
+                                <td>Apr 6, 2025</td>
+                                <td><span class="status-badge status-published">Published</span></td>
+                                <td>
+                                    <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                    <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Healthy Meal Prep for Busy Professionals</td>
+                                <td>David Chen</td>
+                                <td>Lifestyle</td>
+                                <td>Apr 5, 2025</td>
+                                <td><span class="status-badge status-flagged">Flagged</span></td>
+                                <td>
+                                    <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                    <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="pagination">
+                    <div class="page-item"><i class="fas fa-chevron-left"></i></div>
+                    <div class="page-item active">1</div>
+                    <div class="page-item">2</div>
+                    <div class="page-item">3</div>
+                    <div class="page-item">4</div>
+                    <div class="page-item">5</div>
+                    <div class="page-item"><i class="fas fa-chevron-right"></i></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Reported Content Tab -->
+        <div class="content-tabs" id="reported">
+            <div class="header">
+                <h1 class="page-title">Reported Content</h1>
+                <div class="search-bar">
+                    <input type="text" placeholder="Search reports...">
+                    <i class="fas fa-search"></i>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Content Moderation Queue</div>
+                    <div>
+                        <button class="btn btn-outline">View Archive</button>
+                        <button class="btn btn-primary">Take Action on Selected</button>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox"></th>
+                                <th>Content Title</th>
+                                <th>Author</th>
+                                <th>Reporter</th>
+                                <th>Reason</th>
+                                <th>Date Reported</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input type="checkbox"></td>
+                                <td>Inappropriate language in post</td>
+                                <td>Ryan Adams</td>
+                                <td>Multiple Users</td>
+                                <td>Offensive Language</td>
+                                <td>Apr 9, 2025</td>
+                                <td><span class="status-badge status-flagged">Pending</span></td>
+                                <td>
+                                    <button class="action-btn view-report"><i class="fas fa-eye"></i></button>
+                                    <button class="action-btn approve-content"><i class="fas fa-check"></i></button>
+                                    <button class="action-btn delete-content"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox"></td>
+                                <td>Spam content detected</td>
+                                <td>Marketing123</td>
+                                <td>Jane Doe</td>
+                                <td>Spam</td>
+                                <td>Apr 9, 2025</td>
+                                <td><span class="status-badge status-flagged">Pending</span></td>
+                                <td>
+                                    <button class="action-btn view-report"><i class="fas fa-eye"></i></button>
+                                    <button class="action-btn approve-content"><i class="fas fa-check"></i></button>
+                                    <button class="action-btn delete-content"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox"></td>
+                                <td>Copyright infringement claim</td>
+                                <td>Photo_Expert</td>
+                                <td>Original Creator</td>
+                                <td>Copyright Violation</td>
+                                <td>Apr 8, 2025</td>
+                                <td><span class="status-badge status-flagged">Pending</span></td>
+                                <td>
+                                    <button class="action-btn view-report"><i class="fas fa-eye"></i></button>
+                                    <button class="action-btn approve-content"><i class="fas fa-check"></i></button>
+                                    <button class="action-btn delete-content"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox"></td>
+                                <td>Political misinformation</td>
+                                <td>NewsObserver</td>
+                                <td>FactChecker</td>
+                                <td>Misinformation</td>
+                                <td>Apr 7, 2025</td>
+                                <td><span class="status-badge status-flagged">Pending</span></td>
+                                <td>
+                                    <button class="action-btn view-report"><i class="fas fa-eye"></i></button>
+                                    <button class="action-btn approve-content"><i class="fas fa-check"></i></button>
+                                    <button class="action-btn delete-content"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox"></td>
+                                <td>Harassment in comment section</td>
+                                <td>Anonymous User</td>
+                                <td>Multiple Users</td>
+                                <td>Harassment</td>
+                                <td>Apr 7, 2025</td>
+                                <td><span class="status-badge status-flagged">Pending</span></td>
+                                <td>
+                                    <button class="action-btn view-report"><i class="fas fa-eye"></i></button>
+                                    <button class="action-btn approve-content"><i class="fas fa-check"></i></button>
+                                    <button class="action-btn delete-content"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="pagination">
+                    <div class="page-item"><i class="fas fa-chevron-left"></i></div>
+                    <div class="page-item active">1</div>
+                    <div class="page-item">2</div>
+                    <div class="page-item">3</div>
+                    <div class="page-item"><i class="fas fa-chevron-right"></i></div>
+                </div>
+            </div>
+            
+            <div class="card" style="margin-top: 20px;">
+                <div class="card-header">
+                    <div class="card-title">Content Moderation History</div>
+                </div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Content Title</th>
+                                <th>Author</th>
+                                <th>Action Taken</th>
+                                <th>Moderator</th>
+                                <th>Date</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Prohibited product advertisement</td>
+                                <td>HealthStore</td>
+                                <td>Deleted</td>
+                                <td>Admin User</td>
+                                <td>Apr 6, 2025</td>
+                                <td>Violated promotional content policy</td>
+                            </tr>
+                            <tr>
+                                <td>Discussion on sensitive topic</td>
+                                <td>PolicyAnalyst</td>
+                                <td>Approved with warning</td>
+                                <td>Moderator1</td>
+                                <td>Apr 5, 2025</td>
+                                <td>Content complies with guidelines</td>
+                            </tr>
+                            <tr>
+                                <td>Plagiarized article</td>
+                                <td>ContentWriter</td>
+                                <td>Deleted</td>
+                                <td>Admin User</td>
+                                <td>Apr 4, 2025</td>
+                                <td>Confirmed plagiarism from source</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Users Tab -->
+        <div class="content-tabs" id="users">
+            <div class="header">
+                <h1 class="page-title">User Management</h1>
+                <div class="search-bar">
+                    <input type="text" placeholder="Search users...">
+                    <i class="fas fa-search"></i>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">All Users</div>
+                    <button class="btn btn-primary" id="addUserBtn">Add New User</button>
+                </div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Posts</th>
+                                <th>Comments</th>
+                                <th>Joined</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>John Smith</td>
+                                <td>john@example.com</td>
+                                <td>Author</td>
+                                <td>24</td>
+                                <td>156</td>
+                                <td>Jan 15, 2024</td>
+                                <td><span class="status-badge status-published">Active</span></td>
+                                <td>
+                                    <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                    <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn"><i class="fas fa-ban"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Sarah Johnson</td>
+                                <td>sarah@example.com</td>
+                                <td>Editor</td>
+                                <td>42</td>
+                                <td>89</td>
+                                <td>Mar 8, 2024</td>
+                                <td><span class="status-badge status-published">Active</span></td>
+                                <td>
+                                    <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                    <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn"><i class="fas fa-ban"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Michael Lee</td>
+                                <td>michael@example.com</td>
+                                <td>Author</td>
+                                <td>18</td>
+                                <td>67</td>
+                                <td>Apr 23, 2024</td>
+                                <td><span class="status-badge status-published">Active</span></td>
+                                <td>
+                                    <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                    <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn"><i class="fas fa-ban"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Emma Wilson</td>
+                                <td>emma@example.com</td>
+                                <td>Author</td>
+                                <td>15</td>
+                                <td>42</td>
+                                <td>Jun 10, 2024</td>
+                                <td><span class="status-badge status-draft">Pending</span></td>
+                                <td>
+                                    <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                    <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn"><i class="fas fa-check"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>David Chen</td>
+                                <td>david@example.com</td>
+                                <td>Subscriber</td>
+                                <td>0</td>
+                                <td>28</td>
+                                <td>Aug 5, 2024</td>
+                                <td><span class="status-badge status-flagged">Suspended</span></td>
+                                <td>
+                                    <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                    <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn"><i class="fas fa-check"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="pagination">
+                    <div class="page-item"><i class="fas fa-chevron-left"></i></div>
+                    <div class="page-item active">1</div>
+                    <div class="page-item">2</div>
+                    <div class="page-item">3</div>
+                    <div class="page-item">4</div>
+                    <div class="page-item">5</div>
+                    <div class="page-item"><i class="fas fa-chevron-right"></i></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Posts Tab -->
+        <div class="content-tabs" id="posts">
+            <div class="header">
+                <h1 class="page-title">Post Management</h1>
+                <div class="search-bar">
+                    <input type="text" placeholder="Search posts...">
+                    <i class="fas fa-search"></i>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">All Posts</div>
+                    <div>
+                        <button class="btn btn-outline">Export Data</button>
+                        <button class="btn btn-primary">Add New Post</button>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox"></th>
+                                <th>Title</th>
+                                <th>Author</th>
+                                <th>Category</th>
+                                <th>Published</th>
+                                <th>Views</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input type="checkbox"></td>
+                                <td>10 Tips for Better Blog Writing</td>
+                                <td>John Smith</td>
+                                <td>Writing</td>
+                                <td>Apr 8, 2025</td>
+                                <td>1,245</td>
+                                <td><span class="status-badge status-published">Published</span></td>
+                                <td>
+                                    <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                    <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox"></td>
+                                <td>The Future of AI in Content Creation</td>
+                                <td>Sarah Johnson</td>
+                                <td>Technology</td>
+                                <td>Apr 7, 2025</td>
+                                <td>2,187</td>
+                                <td><span class="status-badge status-published">Published</span></td>
+                                <td>
+                                    <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                    <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox"></td>
+                                <td>5 Essential SEO Strategies for 2025</td>
+                                <td>Michael Lee</td>
+                                <td>Marketing</td>
+                                <td>Draft</td>
+                                <td>0</td>
+                                <td><span class="status-badge status-draft">Draft</span></td>
+                                <td>
+                                    <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                    <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox"></td>
+                                <td>Photography Basics: Composition Tips</td>
+                                <td>Emma Wilson</td>
+                                <td>Photography</td>
+                                <td>Apr 6, 2025</td>
+                                <td>1,876</td>
+                                <td><span class="status-badge status-published">Published</span></td>
+                                <td>
+                                    <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                    <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox"></td>
+                                <td>Healthy Meal Prep for Busy Professionals</td>
+                                <td>David Chen</td>
+                                <td>Lifestyle</td>
+                                <td>Apr 5, 2025</td>
+                                <td>956</td>
+                                <td><span class="status-badge status-flagged">Flagged</span></td>
+                                <td>
+                                    <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                    <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="pagination">
+                    <div class="page-item"><i class="fas fa-chevron-left"></i></div>
+                    <div class="page-item active">1</div>
+                    <div class="page-item">2</div>
+                    <div class="page-item">3</div>
+                    <div class="page-item">4</div>
+                    <div class="page-item">5</div>
+                    <div class="page-item"><i class="fas fa-chevron-right"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal for Viewing/Moderating Content -->
+    <div class="modal-overlay" id="reportModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">Review Reported Content</div>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <div class="form-label">Content Title</div>
+                    <div>Inappropriate language in post</div>
+                </div>
+                <div class="form-group">
+                    <div class="form-label">Content Preview</div>
+                    <div style="padding: 10px; background-color: #f9fafb; border-radius: 5px;">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse potenti. 
+                        Mauris [offensive content] nec magna. Suspendisse potenti. 
+                        Duis aute irure dolor in reprehenderit.
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="form-label">Reported by</div>
+                    <div>Multiple Users (5)</div>
+                </div>
+                <div class="form-group">
+                    <div class="form-label">Reason for Report</div>
+                    <div>This post contains offensive language that violates community guidelines</div>
+                </div>
+                <div class="form-group">
+                    <div class="form-label">Moderation Decision</div>
+                    <div class="form-check">
+                        <input type="radio" name="decision" id="approve" class="form-check-input">
+                        <label for="approve">Approve Content (No violation found)</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="radio" name="decision" id="edit" class="form-check-input">
+                        <label for="edit">Edit Content (Remove violations)</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="radio" name="decision" id="delete" class="form-check-input">
+                        <label for="delete">Delete Content (Violates guidelines)</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="radio" name="decision" id="warn" class="form-check-input">
+                        <label for="warn">Warn User (Issue warning only)</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="form-label">Moderator Notes</div>
+                    <textarea class="form-control" placeholder="Add notes about this moderation decision..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-outline modal-close">Cancel</button>
+                    <button class="btn btn-primary">Submit Decision</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal for Adding User -->
+    <div class="modal-overlay" id="addUserModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">Add New User</div>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" id="username" class="form-control" placeholder="Enter username">
+                </div>
+                <div class="form-group">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" id="email" class="form-control" placeholder="Enter email">
+                </div>
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" id="password" class="form-control" placeholder="Enter password">
+                </div>
+                <div class="form-group">
+                    <label for="role" class="form-label">Role</label>
+                    <select id="role" class="form-control">
+                        <option value="subscriber">Subscriber</option>
+                        <option value="author">Author</option>
+                        <option value="editor">Editor</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-outline modal-close">Cancel</button>
+                    <button class="btn btn-primary">Add User</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </body>
+    </html>
+    <script src="{% static 'js/admin.js' %}"></script>

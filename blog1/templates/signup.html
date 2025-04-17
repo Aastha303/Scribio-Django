@@ -1,0 +1,97 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCRIBIO - Sign Up</title>
+    <link rel="shortcut icon" href="{% static 'images/logi.webp' %}" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+</head>
+
+<body>
+    <div class="bg-elements">
+        <!-- Circles -->
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+        
+        <!-- Squares -->
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        
+        <!-- Triangles -->
+        <div class="triangle"></div>
+        <div class="triangle"></div>
+        <div class="triangle"></div>
+        
+        <!-- Glowing orbs -->
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+    </div>
+
+    <div class="login-container">
+        <div class="login-box">
+            <div class="logo-container">
+                <div class="logo-badge">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                <h2>SCRIBIO</h2>
+            </div>
+
+            {% if messages %}
+                <ul>
+                    {% for message in messages %}
+                        <li class="flash {% if message.tags == 'error' %}danger{% else %}success{% endif %}">
+                            {{ message }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            <form action="{% url 'register' %}" method="POST" class="login-form">
+                {% csrf_token %}
+                
+                <div class="input-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" placeholder="Choose your username" required>
+                    <i class="fas fa-user"></i>
+                </div>
+
+                <div class="input-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                    <i class="fas fa-envelope"></i>
+                </div>
+
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Create a strong password" required>
+                    <i class="fas fa-lock"></i>
+                    <div class="password-strength">
+                        <div class="strength-meter"></div>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="confirm_password">Confirm Password</label>
+                    <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm your password" required>
+                    <i class="fas fa-lock"></i>
+                </div>
+
+                <button type="submit" class="login-btn">Create Account</button>
+            </form>
+
+            <div class="signup-link">
+                <p>Already have an account? <a href="{% url 'login' %}">Log In</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/login.js' %}"></script>
+</body>
+</html>

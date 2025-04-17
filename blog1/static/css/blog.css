@@ -1,0 +1,38 @@
+.hover\:text-green-600 {
+    transition: color 0.2s ease-in-out;
+}
+
+.hover\:bg-green-600 {
+    transition: all 0.2s ease-in-out;
+}
+
+article {
+    transition: transform 0.2s ease-in-out;
+}
+
+article:hover {
+    transform: translateY(-2px);
+}
+
+.topic-tag {
+    transition: all 0.2s ease-in-out;
+}
+
+.topic-tag:hover {
+    transform: translateY(-1px);
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

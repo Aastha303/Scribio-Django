@@ -1,0 +1,84 @@
+:root {
+    --primary: #064E3B;    /* Dark Green */
+    --secondary: #0D9488;  /* Teal */
+    --accent: #14B8A6;     /* Light Teal */
+    --neutral: #F0FDF4;    /* Light Sage */
+}
+
+/* Bold Animations */
+@keyframes slideUp {
+    0% { transform: translateY(100px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+@keyframes scaleIn {
+    0% { transform: scale(0.9); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes rotateIn {
+    0% { transform: rotate(-10deg) scale(0.9); opacity: 0; }
+    100% { transform: rotate(0) scale(1); opacity: 1; }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.animate-slide-up { animation: slideUp 1s ease forwards; }
+.animate-fade-in { animation: fadeIn 1s ease forwards; }
+.animate-scale-in { animation: scaleIn 0.8s ease forwards; }
+.animate-rotate-in { animation: rotateIn 0.8s ease forwards; }
+.hover-pulse:hover { animation: pulse 2s infinite; }
+
+/* Scroll Animations */
+.reveal {
+    opacity: 0;
+    transform: translateY(50px);
+    transition: all 1s ease;
+}
+
+.reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Bold Gradients */
+.bold-gradient {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+}
+
+/* Interactive Elements */
+.hover-transform {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-transform:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(6, 78, 59, 0.1);
+}
+
+/* Bold Border Animation */
+@keyframes borderPulse {
+    0% { border-color: var(--primary); }
+    50% { border-color: var(--secondary); }
+    100% { border-color: var(--primary); }
+}
+
+.animate-border {
+    border: 4px solid var(--primary);
+    animation: borderPulse 3s infinite;
+}
+
+.accent-bg { background-color: var(--accent); }
+.neutral-bg { background-color: var(--neutral); }
+.primary-text { color: var(--primary); }
+.secondary-text { color: var(--secondary); }
+.nav-link:hover { color: var(--secondary); }
+

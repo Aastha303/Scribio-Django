@@ -1,0 +1,288 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Profile | ScrioBio{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+    :root {
+        --color-primary: #064E3B;
+        --color-primary-dark: #053E2F;
+        --color-primary-light: #F0FDF4;
+        --color-secondary: #0D9488;
+        --color-accent: #14B8A6;
+    }
+
+    .form-control:focus {
+        border-color: var(--color-primary-light);
+        box-shadow: 0 0 0 0.25rem rgba(6, 78, 59, 0.25);
+    }
+    
+    input[type="file"] {
+        padding: 0.375rem 0.75rem;
+    }
+    
+    .form-check-input:checked {
+        background-color: var(--color-primary);
+        border-color: var(--color-primary);
+    }
+    
+    .form-check-input:focus {
+        border-color: var(--color-primary-light);
+        box-shadow: 0 0 0 0.25rem rgba(6, 78, 59, 0.25);
+    }
+    
+    .list-group-item-action:hover {
+        background-color: var(--color-primary-light);
+    }
+    
+    @media (min-width: 768px) {
+        .sticky-md-top {
+            position: sticky;
+            top: 20px;
+        }
+    }
+
+    .section-title {
+        color: var(--color-primary);
+    }
+
+    .card {
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .btn-primary {
+        background-color: var(--color-primary);
+        border-color: var(--color-primary);
+    }
+
+    .btn-primary:hover {
+        background-color: var(--color-primary-dark);
+        border-color: var(--color-primary-dark);
+    }
+
+    .text-primary {
+        color: var(--color-primary) !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="py-4 bg-light rounded-3 mb-4" style="background: linear-gradient(rgba(6, 78, 59, 0.05), rgba(6, 78, 59, 0.1));">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="display-5 fw-bold section-title">Edit Your Profile</h1>
+                <p class="lead">Customize your profile to showcase your personality and interests.</p>
+            </div>
+            <div class="col-md-4 text-center">
+                <img src="{{ user.profile.profile_image.url }}" alt="{{ user.username }}" class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover; border: 3px solid white; box-shadow: 0 3px 10px rgba(0,0,0,0.1);">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3 mb-4">
+            <div class="card sticky-md-top" style="top: 20px; z-index: 10;">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-user-cog me-2"></i>Profile Settings</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="#profile-photo" class="list-group-item list-group-item-action d-flex align-items-center">
+                        <i class="fas fa-camera text-primary me-3"></i> Profile Photo
+                    </a>
+                    <a href="#bio-section" class="list-group-item list-group-item-action d-flex align-items-center">
+                        <i class="fas fa-comment-alt text-primary me-3"></i> Bio
+                    </a>
+                    <a href="#location-section" class="list-group-item list-group-item-action d-flex align-items-center">
+                        <i class="fas fa-map-marker-alt text-primary me-3"></i> Location
+                    </a>
+                    <a href="#birthday-section" class="list-group-item list-group-item-action d-flex align-items-center">
+                        <i class="fas fa-birthday-cake text-primary me-3"></i> Birth Date
+                    </a>
+                </div>
+                <div class="card-footer bg-white">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'profile' username=user.username %}" class="btn btn-outline-primary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h4 class="mb-0"><i class="fas fa-user-edit me-2"></i>Personal Information</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data" id="profile-form">
+                        {% csrf_token %}
+                        
+                        <div id="profile-photo" class="mb-4 pb-3 border-bottom">
+                            <h5 class="mb-3"><i class="fas fa-camera me-2 text-primary"></i>Profile Photo</h5>
+                            <div class="row align-items-center">
+                                <div class="col-md-3 mb-3 mb-md-0 text-center">
+                                    <img src="{{ user.profile.profile_image.url }}" alt="{{ user.username }}" class="rounded-circle" style="width: 100px; height: 100px; object-fit: cover; border: 2px solid #F0FDF4;">
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="mb-2">
+                                        <label for="{{ form.profile_image.id_for_label }}" class="form-label" style="color: #053E2F;">Change profile image</label>
+                                        {{ form.profile_image }}
+                                        {% if form.profile_image.errors %}
+                                            <div class="text-danger mt-2">
+                                                {{ form.profile_image.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <small class="text-muted d-block">Recommended: Square image, at least 300x300 pixels.</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="bio-section" class="mb-4 pb-3 border-bottom">
+                            <h5 class="mb-3"><i class="fas fa-comment-alt me-2 text-primary"></i>Bio</h5>
+                            <div class="mb-3">
+                                <label for="{{ form.bio.id_for_label }}" class="form-label">Tell others about yourself</label>
+                                <textarea name="bio" id="{{ form.bio.id_for_label }}" class="form-control" rows="4" placeholder="Share a bit about yourself, your interests, or what you write about...">{{ form.bio.value|default:'' }}</textarea>
+                                {% if form.bio.errors %}
+                                    <div class="text-danger mt-2">
+                                        {{ form.bio.errors }}
+                                    </div>
+                                {% endif %}
+                                <div class="d-flex justify-content-between mt-2">
+                                    <small class="text-muted">Write a short bio that describes you.</small>
+                                    <small class="text-muted"><span id="bio-counter">0</span>/250 characters</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="location-section" class="mb-4 pb-3 border-bottom">
+                            <h5 class="mb-3"><i class="fas fa-map-marker-alt me-2 text-primary"></i>Location</h5>
+                            <div class="mb-3">
+                                <label for="{{ form.location.id_for_label }}" class="form-label">Where are you based?</label>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text"><i class="fas fa-globe"></i></span>
+                                    <input type="text" name="location" id="{{ form.location.id_for_label }}" class="form-control" value="{{ form.location.value|default:'' }}" placeholder="City, Country">
+                                </div>
+                                {% if form.location.errors %}
+                                    <div class="text-danger mt-2">
+                                        {{ form.location.errors }}
+                                    </div>
+                                {% endif %}
+                                <small class="text-muted">This will be visible on your profile.</small>
+                            </div>
+                        </div>
+                        
+                        <div id="birthday-section" class="mb-4">
+                            <h5 class="mb-3"><i class="fas fa-birthday-cake me-2 text-primary"></i>Birth Date</h5>
+                            <div class="mb-3">
+                                <label for="{{ form.birth_date.id_for_label }}" class="form-label">When were you born?</label>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                                    <input type="date" name="birth_date" id="{{ form.birth_date.id_for_label }}" class="form-control" value="{{ form.birth_date.value|date:'Y-m-d'|default:'' }}">
+                                </div>
+                                {% if form.birth_date.errors %}
+                                    <div class="text-danger mt-2">
+                                        {{ form.birth_date.errors }}
+                                    </div>
+                                {% endif %}
+                                <small class="text-muted">Your birth date won't be shown publicly.</small>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{% url 'profile' username=user.username %}" class="btn btn-outline-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-header bg-white">
+                    <h4 class="mb-0"><i class="fas fa-shield-alt me-2"></i>Privacy Settings</h4>
+                </div>
+                <div class="card-body">
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="profileVisibility" checked>
+                        <label class="form-check-label" for="profileVisibility">Public Profile</label>
+                        <small class="d-block text-muted">Anyone can see your profile and posts</small>
+                    </div>
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="showEmail">
+                        <label class="form-check-label" for="showEmail">Show Email Address</label>
+                        <small class="d-block text-muted">Display your email address on your profile</small>
+                    </div>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="allowMessages" checked>
+                        <label class="form-check-label" for="allowMessages">Allow Direct Messages</label>
+                        <small class="d-block text-muted">Let other users contact you directly</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script>
+$(document).ready(function() {
+    // Character counter for bio
+    $('#{{ form.bio.id_for_label }}').on('input', function() {
+        var characterCount = $(this).val().length;
+        $('#bio-counter').text(characterCount);
+        
+        // Optional: Add warning when approaching limit
+        if (characterCount > 230) {
+            $('#bio-counter').addClass('text-danger');
+        } else {
+            $('#bio-counter').removeClass('text-danger');
+        }
+    });
+    
+    // Trigger the input event to update counter on page load
+    $('#{{ form.bio.id_for_label }}').trigger('input');
+    
+    // Smooth scroll to sections
+    $('.list-group-item').click(function(e) {
+        e.preventDefault();
+        var target = $(this).attr('href');
+        $('html, body').animate({
+            scrollTop: $(target).offset().top - 100
+        }, 500);
+    });
+    
+    // Preview image before upload
+    $('#{{ form.profile_image.id_for_label }}').change(function() {
+        if (this.files && this.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                $('img.rounded-circle').attr('src', e.target.result);
+            }
+            reader.readAsDataURL(this.files[0]);
+        }
+    });
+    
+    // Form validation
+    $('#profile-form').submit(function(e) {
+        var bioLength = $('#{{ form.bio.id_for_label }}').val().length;
+        if (bioLength > 250) {
+            e.preventDefault();
+            alert('Bio is too long! Please keep it under 250 characters.');
+            return false;
+        }
+        return true;
+    });
+});
+</script>
+{% endblock %}

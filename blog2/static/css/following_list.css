@@ -1,0 +1,45 @@
+.text-primary {
+    color: var(--bs-primary, #0d6efd);
+}
+
+.bg-primary {
+    background-color: var(--bs-primary, #0d6efd);
+}
+
+.border-primary {
+    border-color: var(--bs-primary, #0d6efd);
+}
+
+.following-item {
+    transition: all 0.3s ease;
+}
+
+.following-item:hover {
+    background-color: rgba(6, 78, 59, 0.03);
+}
+
+.badge-custom {
+    background-color: #F0FDF4;
+    color: #065F46;
+    font-weight: normal;
+    padding: 0.35em 0.65em;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    display: inline-flex;
+    align-items: center;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate__fadeIn {
+    animation: fadeIn 0.5s ease forwards;
+    opacity: 0;
+}
+
+.sticky-top {
+    position: sticky; 
+    top: 20px;
+}

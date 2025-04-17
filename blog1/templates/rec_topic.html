@@ -1,0 +1,83 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="{% static 'images/logi.webp' %}" type="image/x-icon">
+    <title>Choose Your Topics</title>
+    <link rel="stylesheet" href="{% static 'css/rec_topic.css' %}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>What are you interested in?</h1>
+            <p class="subtitle">Choose from topics below to personalize your feed</p>
+        </div>
+
+        <div class="topics-grid">
+            <!-- If you want to loop through topics from the view -->
+            
+            {% for topic in topics %}
+                <div class="topic-card" onclick="this.classList.toggle('selected')">
+                    <div class="topic-icon">{{ topic.icon }}</div>
+                    <div class="topic-name">{{ topic.name }}</div>
+                    <div class="topic-description">{{ topic.description }}</div>
+                </div>
+            {% endfor %}
+            
+
+            <!-- Hardcoded topics (like you already have): -->
+            <div class="topic-card" onclick="this.classList.toggle('selected')">
+                <div class="topic-icon">💻</div>
+                <div class="topic-name">Programming</div>
+                <div class="topic-description">Software development, coding tutorials, and best practices</div>
+            </div>
+
+            <div class="topic-card" onclick="this.classList.toggle('selected')">
+                <div class="topic-icon">📊</div>
+                <div class="topic-name">Data Science</div>
+                <div class="topic-description">Analytics, machine learning, and data visualization</div>
+            </div>
+
+            <div class="topic-card" onclick="this.classList.toggle('selected')">
+                <div class="topic-icon">🎨</div>
+                <div class="topic-name">Design</div>
+                <div class="topic-description">UI/UX, graphic design, and creative processes</div>
+            </div>
+
+            <div class="topic-card" onclick="this.classList.toggle('selected')">
+                <div class="topic-icon">📱</div>
+                <div class="topic-name">Technology</div>
+                <div class="topic-description">Latest tech news, reviews, and industry trends</div>
+            </div>
+
+            <div class="topic-card" onclick="this.classList.toggle('selected')">
+                <div class="topic-icon">💡</div>
+                <div class="topic-name">Innovation</div>
+                <div class="topic-description">Startups, new ideas, and breakthrough technologies</div>
+            </div>
+
+            <div class="topic-card" onclick="this.classList.toggle('selected')">
+                <div class="topic-icon">📝</div>
+                <div class="topic-name">Writing</div>
+                <div class="topic-description">Creative writing, storytelling, and content creation</div>
+            </div>
+
+            <div class="topic-card" onclick="this.classList.toggle('selected')">
+                <div class="topic-icon">🎯</div>
+                <div class="topic-name">Productivity</div>
+                <div class="topic-description">Time management, workflow optimization, and personal growth</div>
+            </div>
+
+            <div class="topic-card" onclick="this.classList.toggle('selected')">
+                <div class="topic-icon">💼</div>
+                <div class="topic-name">Business</div>
+                <div class="topic-description">Entrepreneurship, strategy, and market insights</div>
+            </div>
+        </div>
+
+        <a href="{% url 'index' %}" class="continue-link">Continue</a>
+    </div>
+</body>
+</html>
