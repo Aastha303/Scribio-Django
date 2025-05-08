@@ -15,11 +15,11 @@
     <div class="container">
         <div class="row align-items-center">
             <div class="col-md-3 text-center text-md-start mb-4 mb-md-0">
-                <img src="{{ profile.profile_image.url }}" alt="{{ profile.user.username }}" class="author-image rounded-circle">
+                <img src="{{ profile.profile_image.url }}" alt="{{ profile.username }}" class="author-image rounded-circle">
             </div>
             <div class="col-md-9">
                 <div class="d-flex align-items-center mb-3">
-                    <h1 class="display-5 fw-bold mb-0">{{ profile.user.username }}</h1>
+                    <h1 class="display-5 fw-bold mb-0">{{ profile.name }}</h1>  <!-- Updated to profile.name -->
                     {% if profile.is_verified %}
                         <span class="ms-2 badge bg-info rounded-pill"><i class="fas fa-check-circle me-1"></i>Verified</span>
                     {% endif %}
@@ -35,15 +35,15 @@
                         <i class="fas fa-map-marker-alt me-2"></i>{{ profile.location }}
                     </div>
                     {% endif %}
-                    
+                
                     {% if profile.website %}
                     <div class="me-4">
                         <i class="fas fa-globe me-2"></i><a href="{{ profile.website }}" class="text-white" target="_blank">{{ profile.website }}</a>
                     </div>
                     {% endif %}
-                    
+                
                     <div>
-                        <i class="fas fa-calendar-alt me-2"></i>Joined {{ profile.created_at|date:"F Y"|default:"January 2025" }}
+                        <i class="fas fa-calendar-alt me-2"></i>Joined {{ profile.created_at|default:"January 2025" }}
                     </div>
                 </div>
                 
@@ -55,15 +55,15 @@
                 </div>
                 
                 <div>
-                    {% if user.is_authenticated and user.username != profile.user.username %}
-                        <button id="follow-button" class="btn btn-light interaction-btn shadow-sm me-2" data-username="{{ profile.user.username }}">
-                            <i class="fas {% if is_following %}fa-user-check{% else %}fa-user-plus{% endif %} me-2"></i>
-                            {% if is_following %}Following{% else %}Follow{% endif %}
+                    {% if user.is_authenticated and user.username != profile.username %}
+                        <button id="follow-button" class="btn btn-light interaction-btn shadow-sm me-2" data-username="{{ profile.username }}">
+                            <i class="fas {% if profile.is_following %}fa-user-check{% else %}fa-user-plus{% endif %} me-2"></i>
+                            {% if profile.is_following %}Following{% else %}Follow{% endif %}
                         </button>
                         <button class="btn btn-outline-light interaction-btn">
                             <i class="fas fa-envelope me-2"></i>Message
                         </button>
-                    {% elif user.is_authenticated and user.username == profile.user.username %}
+                    {% elif user.is_authenticated and user.username == profile.username %}
                         <a href="{% url 'edit_profile' username=user.username %}" class="btn btn-light interaction-btn shadow-sm me-2">
                             <i class="fas fa-edit me-2"></i>Edit Profile
                         </a>
@@ -73,9 +73,9 @@
                     {% endif %}
                 </div>
             </div>
-        </div>
+        <!-- </div>
     </div>
-</div>
+</div> -->
 
 <div class="container">
     <div class="row">
@@ -84,26 +84,31 @@
             <!-- Stats Bar -->
             <div class="author-stats mb-4">
                 <div class="stat-item">
-                    <div class="stat-value">{{ profile.user.post_set.count }}</div>
+                    <div class="stat-value">{{ profile.article_count|default:"0" }}</div>
                     <div class="stat-label">Articles</div>
                 </div>
                 <div class="stat-item">
-                    <a href="{% url 'profiles:followers-list' profile.user.username %}" class="text-decoration-none">
-                        <div class="stat-value" id="followers-count">{{ profile.followers_count }}</div>
+                    <a href="{% url 'profiles:followers-list' profile.username %}" class="text-decoration-none">
+                        <div class="stat-value" id="followers-count">{{ profile.followers_count|default:"0" }}</div>
                         <div class="stat-label">Followers</div>
                     </a>
                 </div>
                 <div class="stat-item">
-                    <a href="{% url 'profiles:following-list' profile.user.username %}" class="text-decoration-none">
-                        <div class="stat-value">{{ profile.following_count }}</div>
+                    <a href="{% url 'profiles:following-list' profile.username %}" class="text-decoration-none">
+                        <div class="stat-value">{{ profile.following_count|default:"0" }}</div>
                         <div class="stat-label">Following</div>
                     </a>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-value">{{ profile.user.total_views|default:"0" }}</div>
+                    <div class="stat-value">{{ profile.total_views|default:"0" }}</div>
                     <div class="stat-label">Views</div>
                 </div>
             </div>
+        <!-- </div>
+    </div>
+</div> -->
+
+                
             
             <!-- Content Tabs -->
             <div class="content-tabs">

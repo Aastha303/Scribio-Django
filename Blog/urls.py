@@ -23,3 +23,5 @@ urlpatterns = [
     path('profile/', include(('blog2.urls', 'profiles'), namespace='profiles')),
 
 ]
+
+

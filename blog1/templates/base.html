@@ -164,16 +164,23 @@ a.bg-primary:hover {
                 </div>
                 <div class="flex items-center space-x-6">
                     <a href="{% url 'profiles:chat_page' %}" class="text-gray-600 hover:text-primary">AI Writer</a>
+                
+                    {% if request.session.username %}
+    <!-- Show Profile link using the username from session -->
+    <a href="{% url 'profile' request.session.username %}" class="text-gray-600 hover:text-primary">Profile</a>
+    
+    {% if request.session.role == "admin" %}
+        <!-- Show Dashboard link if the user is an admin -->
+        <a href="{% url 'admin_view' %}" class="text-gray-600 hover:text-primary">Dashboard</a>
+    {% endif %}
+    
+    <!-- Show Logout link -->
+    <a href="{% url 'logout' %}" class="text-gray-600 hover:text-primary">Logout</a>
+{% else %}
+    <!-- Show Sign In link if the user is not logged in -->
+    <a href="{% url 'login' %}" class="text-gray-600 hover:text-primary">Sign In</a>
+{% endif %}
 
-                    {% if user.is_authenticated %}
-                        <a href="{% url 'profile' user.username %}" class="text-gray-600 hover:text-primary">Profile</a>
-                        {% if user.is_staff %}
-                            <a href="{% url 'admin_view' %}" class="text-gray-600 hover:text-primary">Dashboard</a>
-                        {% endif %}
-                        <a href="{% url 'logout' %}" class="text-gray-600 hover:text-primary">Logout</a>
-                    {% else %}
-                        <a href="{% url 'login' %}" class="text-gray-600 hover:text-primary">Sign In</a>
-                    {% endif %}
 
                     <a href="#" class="bg-primary text-white px-6 py-2 rounded-full font-medium hover:bg-primary-dark">
                         Get Started

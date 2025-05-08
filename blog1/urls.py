@@ -21,7 +21,7 @@ urlpatterns = [
     path('list/', views.blog_list_view, name='blog_list'),
     path('write/', views.write_blog_view, name='write_blog'),
     path('submit_blog/', views.submit_blog, name='submit_blog'),
-    path('blog/<int:blog_id>/', views.blog_detail_view, name='blog_detail'),
+    path('blogs/<int:blog_id>/', views.blog_detail_view, name='blog_detail'),
     path('delete/<int:blog_id>/', views.delete_blog_view, name='delete_blog'),
     path('update/<int:blog_id>/', views.update_blog_view, name='edit_blog'),
     path('blog/', views.blog_view, name='blog_view'),
@@ -29,4 +29,7 @@ urlpatterns = [
     path('comment/add/', views.add_comment, name='add_comment'),
     path('comment/clap/<int:comment_id>/', views.clap_comment, name='clap_comment'),
 
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] 
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -50,75 +50,85 @@
     </section>
 
     <!-- My Blogs Section -->
-    <section class="py-12 reveal">
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-bold">My Blogs</h2>
-            <a href="{% url 'write_blog' %}" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark">New Blog Post</a>
-        </div>
+    <!-- My Blogs Section -->
+<section class="py-12 reveal">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold">My Blogs</h2>
+        <a href="{% url 'write_blog' %}" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark">New Blog Post</a>
+    </div>
 
-        <div class="grid grid-cols-2 gap-8">
-            {% for post in my_blogs %}
-            <article class="p-6 rounded-lg shadow-lg border hover:shadow-xl transition bg-white">
-                <div class="flex items-center mb-4">
-                    <img src="{{ user.profile.profile_image.url }}" alt="Author Image" class="w-8 h-8 rounded-full mr-2">
-                    <div>
-                        <span class="font-medium block">{{ post.author }}</span>
-                        <span class="text-gray-500 text-sm">{{ post.date }}</span>
-                    </div>
-                </div>
-                <h3 class="font-bold text-2xl mb-3 hover:text-primary transition">{{ post.title }}</h3>
-                <p class="text-gray-600 mb-4 line-clamp-3">{{ post.content|slice:":150" }}...</p>
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-4 text-gray-500 text-sm">
-                        <span>{{ post.read_time }} min read</span><span>•</span><span>{{ post.views }} views</span>
-                    </div>
-                    <div class="flex space-x-2">
-                        <form action="{% url 'delete_blog' post.id %}" method="POST" class="inline">{% csrf_token %}
-                            <button type="submit" class="text-red-500 hover:text-red-700">🗑</button>
-                        </form>
-                        <a href="{% url 'edit_blog' post.id %}" class="text-yellow-500 hover:text-yellow-700">✏ Edit</a>
-                        <a href="{% url 'blog_detail' post.id %}" class="text-primary hover:text-primary-dark">Read More →</a>
-                    </div>
-                </div>
-                </article>
-            {% empty %}
-            <div class="col-span-2 text-center py-12 bg-gray-50 rounded-lg">
-                <p class="text-gray-600 mb-4">No blogs written yet.</p>
-                <a href="" class="text-primary hover:underline">Start writing your first blog →</a>
-            </div>
-            {% endfor %}
-        </div>
-    </section>
-
-    <!-- Trending Blogs -->
-    <section class="py-12 reveal bg-gray-50 -mx-4 px-4">
-        <h2 class="flex items-center text-2xl font-bold mb-8">🔥 Trending on Scribio</h2>
-        <div id="trending-blogs-container" class="grid grid-cols-3 gap-8">
-            {% for post in trending_posts %}
-            <article class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition blog-card hover-scale">
-                <span class="text-4xl font-bold text-gray-200 mb-4 block">0{{ forloop.counter }}</span>
+    <div class="grid grid-cols-2 gap-8">
+        {% for post in my_blogs %}
+        <article class="p-6 rounded-lg shadow-lg border hover:shadow-xl transition bg-white">
+            <div class="flex items-center mb-4">
+                <img src="{% if post.author.profile.profile_image %}{{ post.author.profile.profile_image.url }}{% else %}/static/default-avatar.png{% endif %}" alt="Author Image" class="w-8 h-8 rounded-full mr-2">
                 <div>
-                    <div class="flex items-center mb-3">
-                        <img src="{% static post.author_image %}" alt="Author Image" class="w-8 h-8 rounded-full mr-2">
-                        <div>
-                            <span class="font-medium block">{{ post.author }}</span>
-                            <span class="text-gray-500 text-sm">{{ post.date }}</span>
-                        </div>
-                    </div>
-                    <h3 class="font-bold text-xl mb-3 hover:text-primary transition">{{ post.title }}</h3>
-                    <p class="text-gray-600 mb-4 line-clamp-2">{{ post.excerpt }}</p>
-                    <div class="flex items-center justify-between text-sm">
-                        <span class="text-gray-500">{{ post.read_time }} min read</span>
-                        <div class="flex items-center space-x-2">
-                            <span class="text-gray-500">{{ post.likes }} likes</span><span>•</span><span class="text-gray-500">{{ post.comments }} comments</span>
-                        </div>
-                    </div>
+                    <span class="font-medium block">{{ post.author }}</span>
+                    <span class="text-gray-500 text-sm">{{ post.date|default:"N/A" }}</span>
                 </div>
-            </article>
-            {% endfor %}
+            </div>
+            <h3 class="font-bold text-2xl mb-3 hover:text-primary transition">{{ post.title }}</h3>
+            <p class="text-gray-600 mb-4 line-clamp-3">{{ post.content|slice:":150" }}...</p>
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4 text-gray-500 text-sm">
+                    <span>{{ post.read_time|default:"?" }} min read</span><span>•</span><span>{{ post.views|default:"0" }} views</span>
+                </div>
+                <div class="flex space-x-2">
+                    <form action="{% url 'delete_blog' post.id %}" method="POST" class="inline">
+                        {% csrf_token %}
+                        <button type="submit" class="text-red-500 hover:text-red-700">🗑</button>
+                    </form>
+
+                    <a href="{% url 'edit_blog' post.id %}" class="text-yellow-500 hover:text-yellow-700">✏ Edit</a>
+                    <a href="{% url 'blog_detail' post.id %}" class="text-primary hover:text-primary-dark">Read More →</a>
+                </div>
+            </div>
+        </article>
+        {% empty %}
+        <div class="col-span-2 text-center py-12 bg-gray-50 rounded-lg">
+            <p class="text-gray-600 mb-4">No blogs written yet.</p>
+            <a href="{% url 'write_blog' %}" class="text-primary hover:underline">Start writing your first blog →</a>
         </div>
-    </section>
-</div>
+        {% endfor %}
+    </div>
+    
+</section>
+
+<!-- Trending Blogs -->
+<section class="py-12 reveal bg-gray-50 -mx-4 px-4">
+    <h2 class="flex items-center text-2xl font-bold mb-8">🔥 Trending on Scribio</h2>
+    <div id="trending-blogs-container" class="grid grid-cols-3 gap-8">
+      {% for post in trending_blogs %}
+      <article class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition blog-card hover-scale">
+        <span class="text-4xl font-bold text-gray-200 mb-4 block">0{{ forloop.counter }}</span>
+        <div>
+          <div class="flex items-center mb-3">
+            <img src="{% if post.author_image %}{{ post.author_image }}{% else %}{% static 'images/default-avatar.png' %}{% endif %}" alt="Author Image" class="w-8 h-8 rounded-full mr-2">
+            <div>
+              <span class="font-medium block">{{ post.author }}</span>
+              <span class="text-gray-500 text-sm">{{ post.date }}</span>
+            </div>
+          </div>
+          <h3 class="font-bold text-xl mb-3 hover:text-primary transition">{{ post.title }}</h3>
+          <p class="text-gray-600 mb-4 line-clamp-2">{% if post.excerpt %}{{ post.excerpt }}{% else %}{{ post.content|truncatechars:100 }}{% endif %}</p>
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-gray-500">{{ post.read_time }} min read</span>
+            <div class="flex items-center space-x-2">
+              <span class="text-gray-500">{{ post.likes|default:"0" }} likes</span>
+              <span>•</span>
+              <span class="text-gray-500">{{ post.comments|default:"0" }} comments</span>
+            </div>
+          </div>
+        </div>
+      </article>
+      {% empty %}
+      <div class="col-span-3 text-center py-8">
+        <p class="text-gray-500">No trending blogs available at the moment.</p>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+  
 
 <script src="{% static 'js/index.js' %}"></script>
 {% endblock %}

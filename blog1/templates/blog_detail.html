@@ -2,37 +2,29 @@
 {% load static %}
 
 {% block content %}
-<link rel="shortcut icon" href="{% static 'images/logi.webp' %}" type="image/x-icon">
-
-<div class="max-w-4xl mx-auto mt-10 p-6 bg-white shadow-lg rounded-lg">
-    <!-- Blog Title -->
+  <div class="max-w-4xl mx-auto mt-10 p-6 bg-white shadow-lg rounded-lg">
     <h1 class="text-4xl font-bold text-gray-900">{{ blog.title }}</h1>
 
-    <!-- Author & Date -->
-    <div class="mt-2 text-gray-600 flex items-center">
-        <img src="{{ user.profile.profile_image.url }}" class="w-10 h-10 rounded-full mr-3">
-        <p class="text-lg font-medium">{{ blog.author.username }} • {{ blog.date|date:"F d, Y" }}</p>
-    </div>
+    <!-- Author & Date are simple strings in the JSON -->
+    <p class="mt-2 text-gray-600">
+      {{ blog.author|default:"Unknown Author" }} •
+      {{ blog.date|default:"Unknown Date" }}
+    </p>
 
-    <!-- Blog Image -->
     {% if blog.image_path %}
-    <img src="{{ MEDIA_URL }}{{ blog.image_path }}" alt="Blog Image">
-{% else %}
-    <p>No image available for this blog.</p>
-{% endif %}
+      <img src="{{ MEDIA_URL }}{{ blog.image_path }}" alt="Blog Image" class="mt-6 rounded-lg">
+    {% else %}
+      <p class="mt-4 italic text-gray-500">No image available for this blog.</p>
+    {% endif %}
 
-
-    <!-- Blog Content -->
     <div class="mt-6 text-gray-800 leading-relaxed text-lg">
-        {{ blog.content|safe }}
+      {{ blog.content|safe }}
     </div>
 
-    <!-- Read Time -->
-    <p class="mt-6 italic text-gray-500">Estimated Read Time: {{ blog.read_time }} minutes</p>
+    <p class="mt-6 italic text-gray-500">Read Time: {{ blog.read_time|default:"?" }} min</p>
 
-    <!-- Back to Home -->
     <div class="mt-8">
-        <a href="{% url 'index' %}" class="text-green-700 text-lg font-semibold hover:underline">← Back to Home</a>
+      <a href="{% url 'index' %}" class="text-green-700 hover:underline">← Back to Home</a>
     </div>
-</div>
+  </div>
 {% endblock %}

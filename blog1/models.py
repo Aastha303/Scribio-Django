@@ -16,6 +16,7 @@ class TrendingBlog(models.Model):
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     bio = models.TextField(blank=True)
+    role = models.CharField(max_length=50, choices=[('admin', 'Admin'), ('user', 'User')], default='user')
     skills = models.TextField(blank=True)
     interests = models.TextField(blank=True)  # Comma-separated
     is_profile_complete = models.BooleanField(default=False)
@@ -24,6 +25,13 @@ class Profile(models.Model):
     birth_date = models.DateField(null=True, blank=True)
     profile_image = models.ImageField(upload_to='profile_pics', default='default_profile.jpg')
     following = models.ManyToManyField('self', symmetrical=False, related_name='followers', blank=True)
+
+    @receiver(post_save, sender=User)
+    def create_or_update_profile(sender, instance, created, **kwargs):
+        if created:
+            Profile.objects.create(user=instance)
+        else:
+            instance.profile.save()
 
     
     def _str_(self):
@@ -53,26 +61,13 @@ class Profile(models.Model):
     def following_count(self):
         return self.following.count()
 
-# Signal to create a profile when a user is created
-@receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:
-        # Create an empty profile for the new user
-        profile = Profile.objects.create(user=instance)
-        
-        # Ensure no automatic following happens here
-        profile.following.clear()  # Clears any followers if it has been mistakenly added
-        profile.save()
 
-# Signal to save the profile when the user is saved or updated
-@receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
-    instance.profile.save()
 
     def __str__(self):
         return self.user.username
 
 class Blog(models.Model):
+    role = models.CharField(max_length=20, choices=[('admin', 'Admin'), ('user', 'User')], default='user')
     title = models.CharField(max_length=255)
     content = models.TextField()
     read_time = models.IntegerField()
@@ -82,6 +77,7 @@ class Blog(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     is_trending = models.BooleanField(default=False)  # Add this line
     tags = models.CharField(max_length=200, blank=True)
+    read_time = models.IntegerField(null=True, blank=True)  # Allow NULL and blank values
 
     def __str__(self):
         return self.title
@@ -89,6 +85,7 @@ class Blog(models.Model):
 class Comment(models.Model):
     author = models.CharField(max_length=100)
     content = models.TextField()
+    post = models.ForeignKey('Post',on_delete=models.CASCADE,null=True)
     date = models.DateTimeField(auto_now_add=True)
     claps = models.IntegerField(default=0)
 

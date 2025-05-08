@@ -17,8 +17,16 @@ from .forms import ProfileUpdateForm, BlogPostForm
 from .models import Blog
 from django.conf import settings
 import os
-from blog1.models import Comment, Article, List, Post, RecommendedTopic, Writer  # Import all models correctly
+from blog1.models import Comment, Article, List, Post, RecommendedTopic, Writer  
 from blog2.models import Follow
+import requests
+from django.core.files.storage import FileSystemStorage
+from django.views import View
+from .models import Blog
+from django.http import Http404
+
+
+FLASK_API_BASE = getattr(settings, "FLASK_API_BASE", "http://127.0.0.1:5001")
 
 def home(request):
     return render(request, 'home.html')
@@ -51,19 +59,46 @@ def search_view(request):
         'user_blogs': user_blogs,
     })
 
-
-
 def index(request):
-    # Get blogs by the current logged-in user
-    my_blogs = Blog.objects.filter(author=request.user).order_by('-created_at')
+    # Initialize empty lists for blogs
+    my_blogs = []
+    trending_blogs = []
 
-    # Get trending posts
-    trending_posts = TrendingBlog.objects.all()
+    # Fetch regular blogs from Flask API
+    try:
+        flask_api_url = f"{FLASK_API_BASE}/api/blogs"
+        response = requests.get(flask_api_url)
+
+        print(f"Flask API Response Status: {response.status_code}")
+        print(f"Flask API Response Content: {response.text[:100]}...")
+
+        if response.status_code == 200:
+            my_blogs = response.json()
+        else:
+            messages.error(request, "Failed to fetch blogs from Flask API.")
+    except requests.exceptions.RequestException as e:
+        messages.error(request, f"API request error for blogs: {e}")
+
+    # Fetch trending blogs from Flask API
+    try:
+        trending_api_url = f"{FLASK_API_BASE}/api/trending-blogs"
+        trending_response = requests.get(trending_api_url)
+
+        print(f"Trending API Response Status: {trending_response.status_code}")
+        print(f"Trending API Response Content: {trending_response.text[:100]}...")
+
+        if trending_response.status_code == 200:
+            trending_blogs = trending_response.json()
+        else:
+            messages.error(request, "Failed to fetch trending blogs from Flask API.")
+    except requests.exceptions.RequestException as e:
+        messages.error(request, f"API request error for trending blogs: {e}")
 
     return render(request, 'index.html', {
         'my_blogs': my_blogs,
-        'trending_posts': trending_posts
+        'trending_blogs': trending_blogs
     })
+
 
 def theme(request):
     return render(request, 'theme.html')
@@ -76,22 +111,47 @@ def login_view(request):
         username = request.POST.get("username")
         password = request.POST.get("password")
 
-        user = authenticate(request, username=username, password=password)
+        payload = {
+            "username": username,
+            "password": password
+        }
 
-        if user is not None:
-            login(request, user)
-            messages.success(request, "Login Successful! Please Complete Your Profile.")
+        try:
+            response = requests.post(f"{FLASK_API_BASE}/login", json=payload)
 
-            if hasattr(user, 'role') and user.role == "admin":
-                return redirect('badge')
+            if response.status_code == 200:
+                user_data = response.json()
 
-            next_page = request.GET.get('next')
-            return redirect(next_page) if next_page else redirect('index')
+                user, created = User.objects.get_or_create(
+                    username=user_data['username'],
+                    defaults={'email': user_data['email']}
+                )
 
-        else:
-            messages.error(request, "Invalid credentials, please try again.")
+                user.set_password(password)
+                user.save()
 
-    return render(request, "login.html")
+                user = authenticate(request, username=user_data['username'], password=password)
+
+                if user is not None:
+                    login(request, user)
+
+                    request.session['username'] = user_data['username']
+                    request.session['role'] = user_data['role']  
+
+                    messages.success(request, "Login Successful!")
+                    return redirect('index') 
+                else:
+                    messages.error(request, "Authentication failed.")
+            else:
+                error_msg = response.json().get("error", "Invalid credentials.")
+                messages.error(request, error_msg)
+        
+        except requests.exceptions.RequestException as e:
+            messages.error(request, f"API error: {e}")
+        except Exception as e:
+            messages.error(request, f"Unexpected error: {e}")
+
+    return render(request, 'login.html')
 
 def register(request):
     if request.method == 'POST':
@@ -104,40 +164,58 @@ def register(request):
             messages.error(request, "Passwords do not match!")
             return redirect('register')
 
-        # Check for existing users
-        if User.objects.filter(username=username).exists():
-            messages.error(request, "Username already exists. Choose another one.")
-        elif User.objects.filter(email=email).exists():
-            messages.error(request, "Email is already used, please try with another one.")
-        else:
-            try:
-                User.objects.create(
-                    username=username,
-                    email=email,
-                    password=make_password(password)
-                )
-                messages.success(request, "Registration successful! Please log in.")
+        payload = {
+            "username": username,
+            "email": email,
+            "password": password,
+            "confirm_password": confirm_password
+        }
+
+        try:
+            response = requests.post(f"{FLASK_API_BASE}/register", json=payload)
+
+            if response.status_code == 200:
+                user_data = response.json()
+                messages.success(request, f"Welcome, {user_data['user']}!")
                 return redirect('login')
-            except IntegrityError:
-                messages.error(request, "An error occurred while creating your account.")
+            else:
+                try:
+                    error_msg = response.json().get("error", "Something went wrong.")
+                except Exception:
+                    error_msg = response.text
+                messages.error(request, error_msg)
+
+        except requests.exceptions.ConnectionError:
+            messages.error(request, "Could not connect to the Flask API. Is it running?")
+        except requests.exceptions.RequestException as e:
+            messages.error(request, f"API request failed: {e}")
 
     return render(request, 'signup.html')
 
-
 class ProfileDetailView(DetailView):
-    model = Profile
+    model = User
     template_name = 'profile_detail.html'
     context_object_name = 'profile'
-    
+
     def get_object(self):
-        return get_object_or_404(Profile, user__username=self.kwargs['username'])
-    
+        return get_object_or_404(User, username=self.kwargs['username'])
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Check if current user is following this profile
-        if self.request.user.is_authenticated:
-            context['is_following'] = self.request.user.profile.is_following(self.get_object())
+        
+        context['username'] = self.object.username  
+        
+
+        try:
+            response = requests.get(f"{FLASK_API_BASE}/profile/{self.request.user.username}")
+            response.raise_for_status()
+            profile_data = response.json()
+            context['profile_data'] = profile_data
+        except requests.exceptions.RequestException as e:
+            context['error'] = f"Error fetching profile: {str(e)}"
+
         return context
+
     
 class ProfileUpdateView(LoginRequiredMixin, UpdateView):
     model = Profile
@@ -183,7 +261,7 @@ def admin_view(request):
     return render(request, 'admin.html')
 
 def delete_post(request, post_id):
-    post = get_object_or_404(Blog, id=post_id)  # <-- Correct model reference
+    post = get_object_or_404(Blog, id=post_id)  
     if request.user == post.author or request.user.profile.role == 'admin':
         post.delete()
         messages.success(request, 'Post deleted successfully.')
@@ -195,197 +273,294 @@ def delete_post(request, post_id):
 def logout_view(request):
     logout(request)
     messages.success(request, "Logged out successfully.")
-    return redirect('index')  # or 'home' or wherever you want
+    return redirect('index') 
 
 
 
-from django.views.decorators.http import require_POST
-from django.views.decorators.csrf import csrf_exempt  # optional if using proper CSRF token in JS
+def blog_list_view(request):
+    try:
+        resp = requests.get(f"{settings.FLASK_API_BASE}/blogs", timeout=5)
+        resp.raise_for_status()
+        blogs = resp.json()               
+    except requests.RequestException as e:
+        raise Http404("Could not fetch blog list")
 
-@require_POST
+
+    request.session['blog_id_list'] = [b['id'] for b in blogs]
+
+    return render(request, 'blog.html', {
+        'blogs': blogs,
+    })
+
+
+@login_required
+def write_blog_view(request):
+    if request.method == "POST":
+
+        title = request.POST.get('title', 'Untitled Blog')
+        content = request.POST.get('content', 'No content provided.')
+        category = request.POST.get('category', 'Uncategorized')
+        author = request.user.username
+        read_time = request.POST.get('read_time', 5)
+        image = request.FILES.get('image')
+
+        files = {}
+        if image:
+            files['image'] = (image.name, image.read(), image.content_type)
+
+        data = {
+            "title": title,
+            "content": content,
+            "category": category,
+            "author": author,
+            "read_time": read_time
+        }
+
+        access_token = request.session.get('access_token')  
+        headers = {}
+        if access_token:
+            headers['Authorization'] = f"Bearer {access_token}"
+
+        try:
+            response = requests.post(
+                f"{FLASK_API_BASE}/api/blogs/create",
+                data=data,
+                files=files,
+                headers=headers
+            )
+
+            if response.status_code == 201:
+                messages.success(request, "Blog created successfully .")
+            else:
+                messages.error(request, f"Failed to create blog. Status code: {response.status_code} - {response.text}")
+        except requests.exceptions.RequestException as e:
+            messages.error(request, f"API error: {e}")
+
+        return redirect('index')
+    
+
+    return render(request, 'write_blog.html')
+
 @login_required
 def toggle_follow(request, username):
     """
     Toggle follow/unfollow a user
     """
-    # Get the user to follow/unfollow
     user_to_follow = get_object_or_404(User, username=username)
     
-    # Can't follow yourself
     if request.user == user_to_follow:
         messages.error(request, "You cannot follow yourself.")
         return redirect('profile_detail', username=username)
     
-    # Check if already following
     try:
-        # Assuming you have a Follow model with follower and following fields
         follow_obj = Follow.objects.get(follower=request.user, following=user_to_follow)
-        # If exists, unfollow
         follow_obj.delete()
         messages.success(request, f"You have unfollowed {username}.")
     except Follow.DoesNotExist:
-        # If not following, create follow relationship
+
         Follow.objects.create(follower=request.user, following=user_to_follow)
         messages.success(request, f"You are now following {username}.")
     
-    # Redirect back to the profile page
+
     return redirect('profile_detail', username=username)
 
-
 def blog_list_view(request):
-    blogs = Blog.objects.all().order_by('-created_at')
-    return render(request, 'damon', {'blogs': blogs})
+    try:
+        response = requests.get(f"{FLASK_API_BASE}/api/blogs")
+        if response.status_code == 200:
+            blogs = response.json()
+        else:
+            blogs = []
+            messages.error(request, "Failed to load blogs from Flask backend.")
+    except requests.exceptions.RequestException as e:
+        blogs = []
+        messages.error(request, f"Error contacting Flask API: {e}")
 
-def write_blog_view(request):
-    if request.method == "POST":
+    return render(request, 'blog.html', {'blogs': blogs})
+
+@login_required
+def get_blog_by_id_view(request, blog_id):
+    try:
+        response = requests.get(f"{FLASK_API_BASE}/{blog_id}")
+        
+        if response.status_code == 200:
+            blog = response.json()  
+            return render(request, 'blog_detail.html', {'blog': blog})
+        else:
+            messages.error(request, "Blog not found")
+            return redirect('index')
+        
+    except requests.exceptions.RequestException as e:
+        messages.error(request, f"API error: {e}")
+        return redirect('index')
+
+@login_required
+def delete_blog_view(request, blog_id):
+    """
+    Delete a blog post using the Flask API only.
+    """
+    try:
+        response = requests.delete(f"{FLASK_API_BASE}/blogs/{blog_id}/delete")
+        if response.status_code != 200:
+            messages.error(request, f"Blog not found. Status code: {response.status_code}")
+            return redirect('index')
+
+        blog_data = response.json()
+
+        if request.user.username == blog_data.get("author") or \
+           (hasattr(request.user, 'profile') and request.user.profile.role == 'admin'):
+
+            delete_response = requests.delete(f"{FLASK_API_BASE}/blogs/{blog_id}/delete")
+
+            if delete_response.status_code == 200:
+                messages.success(request, "Blog deleted successfully.")
+            else:
+                messages.error(request, f"Failed to delete blog. Status code: {delete_response.status_code}")
+        else:
+            messages.error(request, "Blog deleted successfully.")
+
+    except requests.exceptions.RequestException as e:
+        messages.error(request, f"API Error: {e}")
+
+    return redirect('index')
+
+
+
+@login_required
+def submit_blog(request):
+    if request.method == 'POST':
         title = request.POST.get('title', 'Untitled Blog')
         content = request.POST.get('content', 'No content provided.')
         category = request.POST.get('category', 'Uncategorized')
-        author = request.user.username if request.user.is_authenticated else "Damon"
+        author = request.user.username 
         read_time = request.POST.get('read_time', 5)
         image = request.FILES.get('image')
 
-        image_path = None
+        files = {}
         if image:
-            image_dir = os.path.join(settings.MEDIA_ROOT, 'uploads')
-            os.makedirs(image_dir, exist_ok=True)
-            image_path = os.path.join('uploads', image.name)
-            with open(os.path.join(settings.MEDIA_ROOT, image_path), 'wb+') as f:
-                for chunk in image.chunks():
-                    f.write(chunk)
+            files['image'] = (image.name, image.read(), image.content_type)
 
-        Blog.objects.create(
-            title=title,
-            content=content,
-            category=category,
-            author=author,
-            read_time=read_time,
-            image_path=image_path
-        )
+        data = {
+            "title": title,
+            "content": content,
+            "category": category,
+            "author": author,
+            "read_time": read_time
+        }
+
+        try:
+            response = requests.post(f"{FLASK_API_BASE}/api/blogs/create", data=data, files=files)
+            if response.status_code == 201:
+                messages.success(request, "Blog submitted to Flask backend.")
+            else:
+                messages.error(request, f"Flask API error: {response.status_code} - {response.text}")
+        except requests.exceptions.RequestException as e:
+            messages.error(request, f"Could not reach Flask API: {e}")
 
         return redirect('index')
 
     return render(request, 'write_blog.html')
 
-
-def blog_list_view(request):
-    blogs = Blog.objects.all().order_by('-created_at')
-    return render(request, 'blog.html', {'blogs': blogs})
-
-
-@login_required
-def delete_blog_view(request, blog_id):
-    blog = get_object_or_404(Blog, id=blog_id)
-    if request.method == "POST":
-        blog.delete()
-        messages.success(request, "Blog deleted successfully.")
-        return redirect('index')
-    return render(request, 'delete.html', {'blog': blog})
-
-def submit_blog(request):
-    if request.method == 'POST':
-        title = request.POST.get('title')
-        content = request.POST.get('content')
-        category = request.POST.get('category')
-        read_time = request.POST.get('read_time', 5)
-        image = request.FILES.get('image')
-
-        image_path = None
-        if image:
-            image_path = f"uploads/{image.name}"
-            with open(f"static/{image_path}", 'wb+') as f:
-                for chunk in image.chunks():
-                    f.write(chunk)
-
-        blog = Blog.objects.create(
-            title=title,
-            content=content,
-            category=category,
-            read_time=read_time,
-            author=request.user.username,
-            image_path=image_path,
-        )
-        return redirect('index')
-    
-def submit_blog(request):
-    if request.method == 'POST':
-        title = request.POST.get('title')
-        content = request.POST.get('content')
-        category = request.POST.get('category')
-        read_time = request.POST.get('read_time', 5)
-        image = request.FILES.get('image')
-
-        image_path = None
-        if image:
-            # Save the image to the media directory (using MEDIA_ROOT)
-            image_path = f"uploads/{image.name}"
-            image_full_path = os.path.join(settings.MEDIA_ROOT, image_path)
-            
-            # Ensure the 'uploads' directory exists
-            os.makedirs(os.path.dirname(image_full_path), exist_ok=True)
-
-            # Save the image to the media directory
-            with open(image_full_path, 'wb+') as f:
-                for chunk in image.chunks():
-                    f.write(chunk)
-                    
-        blog = Blog.objects.create(
-            title=title,
-            content=content,
-            category=category,
-            read_time=read_time,
-            author=request.user.username,
-            image_path=image_path,
-        )
-        return redirect('index')
-
-
 def blog_detail_view(request, blog_id):
-    blog = get_object_or_404(Blog, id=blog_id)
-    return render(request, 'blog_detail.html', {
-        'blog': blog,
-        'MEDIA_URL': settings.MEDIA_URL,
-    })
+    try:
+        from .models import Blog
+        # Try fetching the blog from the Django database
+        blog = Blog.objects.get(id=blog_id)
+        
+        # Prepare blog data for rendering in the template
+        blog_data = {
+            'id': blog.id,
+            'title': blog.title,
+            'content': blog.content,
+            'category': blog.category,
+            'author': str(blog.author),
+            'read_time': blog.read_time,
+            'image_path': blog.image_path,
+            'is_django_blog': True  # Indicates this blog is from Django
+        }
+        
+        return render(request, 'blog_detail.html', {
+            'blog': blog_data,
+            'MEDIA_URL': settings.MEDIA_URL,
+        })
+        
+    except Blog.DoesNotExist:
+        # If the blog doesn't exist in Django's database, fallback to Flask API
+        try:
+            # Adjusted API call for fetching blog from Flask API
+            resp = requests.get(f"{FLASK_API_BASE}/detail/api/blog/{blog_id}", timeout=5)
+            if resp.status_code == 200:
+                blog = resp.json()
+                blog['is_django_blog'] = False  # Mark this as a Flask blog
+                return render(request, 'blog_detail.html', {
+                    'blog': blog,
+                    'MEDIA_URL': settings.MEDIA_URL,
+                })
+            else:
+                raise Http404("Blog not found")
+        except requests.RequestException:
+            # If there's an error reaching Flask API
+            raise Http404("Blog not found or API not reachable")
+
+
+
 
 def update_blog_view(request, blog_id):
-    blog = get_object_or_404(Blog, id=blog_id)
+    try:
+        # Adjusted URL for fetching blog details from Flask API
+        res = requests.get(f"{FLASK_API_BASE}/api/blogs/{blog_id}")
+        if res.status_code == 200:
+            blog = res.json()
+        else:
+            raise Http404("Blog not found")
+    except requests.exceptions.RequestException:
+        raise Http404("Flask API unreachable")
 
     if request.method == 'POST':
-        blog.title = request.POST.get('title')
-        blog.content = request.POST.get('content')
-        blog.category = request.POST.get('category')
-        blog.read_time = request.POST.get('read_time', blog.read_time)
+        title = request.POST.get('title')
+        content = request.POST.get('content')
+        category = request.POST.get('category')
+        read_time = request.POST.get('read_time', blog.get('read_time'))
 
         image = request.FILES.get('image')
+        image_path = blog.get('image_path')
         if image:
-            # Save the image to the media directory (using MEDIA_ROOT)
             image_path = f"uploads/{image.name}"
             image_full_path = os.path.join(settings.MEDIA_ROOT, image_path)
-            
-            # Ensure the 'uploads' directory exists
             os.makedirs(os.path.dirname(image_full_path), exist_ok=True)
-
-            # Save the image to the media directory
             with open(image_full_path, 'wb+') as f:
                 for chunk in image.chunks():
                     f.write(chunk)
-                    
-            # Update the blog with the new image path
-            blog.image_path = image_path
 
-        blog.save()
-        return redirect('blog_detail', blog_id=blog.id)
+        payload = {
+            "title": title,
+            "content": content,
+            "category": category,
+            "read_time": read_time,
+            "image_path": image_path,
+            "author": request.user.username,
+        }
+
+        try:
+            # Adjusted URL for updating blog via Flask API
+            update_res = requests.put(f"{FLASK_API_BASE}/api/blog/update/{blog_id}", json=payload)
+            if update_res.status_code == 200:
+                return redirect('blog_detail', blog_id=blog_id)
+            else:
+                messages.error(request, "Update failed.")
+        except requests.exceptions.RequestException as e:
+            messages.error(request, f"API error: {e}")
 
     return render(request, 'update_blog.html', {'blog': blog})
 
 
 
+
+
 def blog_view(request):
-    # Fetch recommended topics and writers from the database
     recommended_topics = RecommendedTopic.objects.all()
     writers = Writer.objects.all()
 
-    # For debugging, check if the data is being fetched
     print("Recommended Topics:", recommended_topics)
     print("Writers:", writers)
 
@@ -411,25 +586,31 @@ def damon(request):
 
 def add_comment(request):
     if request.method == 'POST':
+        print("DEBUG: POST DATA= ",request.POST)
         author = request.POST.get('author')
         comment_content = request.POST.get('comment')
         post_id = request.POST.get('post_id')
 
-        print("DEBUG: Received post_id =", post_id)  # Debugging post_id
+        print("DEBUG: Received post_id =", post_id)  
         if not post_id:
             return HttpResponse("Missing post ID", status=400)
-
+        
+        payload = {
+            "author": author,
+            "comment":comment_content,
+            "post_id":post_id
+        }
         try:
-            post = Post.objects.get(id=post_id)
-        except Post.DoesNotExist:
-            return HttpResponse(f"Post with ID {post_id} does not exist", status=404)
+            response = requests.post(f"{FLASK_API_BASE}/add_comments",json=payload)
+        except requests.exceptions.RequestException as e:
+            return HttpResponse(f"Failed to connect to Flask API: {e}", status=500)
 
-        Comment.objects.create(author=author, content=comment_content, post=post, claps=0)
-        return redirect('damon')  # After adding the comment, redirect to the damon page
+        Comment.objects.create(author=author, content=comment_content, claps=0)
+        return redirect('damon')  
 
 def clap_comment(request, comment_id):
     comment = Comment.objects.get(id=comment_id)
     comment.claps += 1
     comment.save()
     
-    return redirect('damon')  # Redirect to the damon view after clapping the comment
+    return redirect('damon')
